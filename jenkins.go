@@ -59,8 +59,8 @@ func (j *Jenkins) Init() (*Jenkins, error) {
 	}
 
 	j.Version = rsp.Header.Get("X-Jenkins")
-	if j.Raw == nil {
-		return nil, errors.New("Connection Failed, Please verify that the host and credentials are correct.")
+	if rsp.StatusCode == http.StatusUnauthorized {
+		return nil, errors.New("connection failed. Please verify that the host and credentials are correct")
 	}
 
 	return j, nil
