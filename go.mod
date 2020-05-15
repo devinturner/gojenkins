@@ -1,4 +1,4 @@
-module github.com/venasolutions/gojenkins
+module github.com/devinturner/gojenkins
 
 go 1.13
 
