@@ -412,6 +412,26 @@ func (j *Jenkins) GetAllJobs() ([]*Job, error) {
 	return jobs, nil
 }
 
+func (j *Jenkins) GetAllJobsChan() <-chan *Job {
+	exec := Executor{Raw: new(ExecutorResponse), Jenkins: j}
+	_, err := j.Requester.GetJSON("/", exec.Raw, nil)
+	if err != nil {
+		log.Println(err)
+	}
+	ch := make(chan *Job)
+	go func() {
+		for _, job := range exec.Raw.Jobs {
+			ji, err := j.GetJob(job.Name)
+			if err != nil {
+				log.Println(err)
+			}
+			ch <- ji
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Returns a Queue
 func (j *Jenkins) GetQueue() (*Queue, error) {
 	q := &Queue{Jenkins: j, Raw: new(queueResponse), Base: j.GetQueueUrl()}
